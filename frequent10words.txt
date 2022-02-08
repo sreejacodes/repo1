@@ -1,0 +1,62 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"sort"
+	"strings"
+)
+
+//project2
+func main() {
+	inputText := "aa bb cc dd ee ff gg hh ii jj kk ll mm nn oo aa aa aa aa aa aa aa aa aa aa bb bb bb bb bb bb bb bb bb bb bb bb cc cc cc cc cc cc cc cc dd dd dd dd dd dd dd ee ee ee ee ee ee ff ff ff ff ff gg gg gg gg hh hh hh ii ii jj"
+	fmt.Println(findWords(inputText))
+}
+
+type OutputStruct struct {
+	Pairs []Pair `json:"pairs"`
+}
+
+type Pair struct {
+	Key   string
+	Value int
+}
+
+type PairList []Pair
+
+func (p PairList) Len() int           { return len(p) }
+func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p PairList) Less(i, j int) bool { return p[i].Value > p[j].Value }
+
+//project1
+func findWords(text string) string {
+	allWords := strings.Split(text, " ")
+	wordsMap := make(map[string]int, len(allWords))
+	for _, word := range allWords {
+		if num, exist := wordsMap[word]; exist {
+			wordsMap[word] = num + 1
+		} else {
+
+			wordsMap[word] = 1
+		}
+	}
+	p := make(PairList, len(wordsMap))
+	i := 0
+	for k, v := range wordsMap {
+		p[i] = Pair{k, v}
+		i++
+	}
+	sort.Sort(p)
+	var pairs10 []Pair
+	for i, k := range p {
+		pairs10 = append(pairs10, k)
+		if i == 9 {
+			break
+		}
+	}
+	op := OutputStruct{
+		Pairs: pairs10,
+	}
+	byteArr, _ := json.Marshal(op)
+	return string(byteArr)
+}
